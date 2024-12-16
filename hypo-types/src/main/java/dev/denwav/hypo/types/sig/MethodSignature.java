@@ -29,12 +29,11 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public final class MethodSignature extends Intern<MethodSignature> implements TypeRepresentable {
-
-    private static final WeakHashMap<MethodSignature, WeakReference<MethodSignature>> internment = new WeakHashMap<>();
 
     private final @NotNull List<? extends TypeParameter> typeParameters;
     private final @NotNull List<? extends TypeSignature> parameters;
@@ -56,7 +55,6 @@ public final class MethodSignature extends Intern<MethodSignature> implements Ty
         final @NotNull TypeSignature returnType,
         final @NotNull List<? extends ThrowsSignature> throwsSignatures
     ) {
-        super(internment);
         this.typeParameters = List.copyOf(typeParameters);
         this.parameters = List.copyOf(parameters);
         this.returnType = returnType;
@@ -67,6 +65,12 @@ public final class MethodSignature extends Intern<MethodSignature> implements Ty
         return parse(text, 0);
     }
     public static @NotNull MethodSignature parse(final @NotNull String text, final int from) {
+        if (text.length() > 1 && from == 0) {
+            final MethodSignature r = Intern.tryFind(MethodSignature.class, text);
+            if (r != null) {
+                return r;
+            }
+        }
         return JvmTypeParser.parseMethodSignature(text, from);
     }
 

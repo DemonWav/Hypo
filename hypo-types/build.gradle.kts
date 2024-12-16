@@ -35,6 +35,7 @@ val typesExport = project(":types-export")
 tasks.test {
     dependsOn(typesExport.tasks.named("buildTypesExport"))
 
+//    systemProperty("hypo.interning.disabled", "true")
     val zipFile = typesExport.layout.buildDirectory.file("types-export/types-export.zip").get().asFile.absolutePath
     systemProperty("hypo.types.zip", zipFile)
 }

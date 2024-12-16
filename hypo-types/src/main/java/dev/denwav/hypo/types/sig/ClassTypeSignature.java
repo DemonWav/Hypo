@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,9 +36,6 @@ import org.jetbrains.annotations.Nullable;
 public final class ClassTypeSignature
     extends Intern<ClassTypeSignature>
     implements ReferenceTypeSignature, ThrowsSignature {
-
-    private static final WeakHashMap<ClassTypeSignature, WeakReference<ClassTypeSignature>> internment =
-        new WeakHashMap<>();
 
     private final @Nullable ClassTypeSignature parentClass;
     private final @NotNull String name;
@@ -69,7 +67,6 @@ public final class ClassTypeSignature
         final @NotNull String name,
         final @Nullable List<? extends TypeArgument> typeArguments
     ) {
-        super(internment);
         this.parentClass = parentClass;
         this.name = name;
         if (typeArguments == null) {

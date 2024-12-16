@@ -28,13 +28,12 @@ import dev.denwav.hypo.types.sig.ThrowsSignature;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
 public final class TypeVariable
     extends Intern<TypeVariable>
     implements ReferenceTypeSignature, TypeRepresentable, ThrowsSignature {
-
-    private static final WeakHashMap<TypeVariable, WeakReference<TypeVariable>> internment = new WeakHashMap<>();
 
     private final @NotNull TypeParameter definition;
 
@@ -47,7 +46,6 @@ public final class TypeVariable
     }
 
     private TypeVariable(final @NotNull TypeParameter definition) {
-        super(internment);
         this.definition = definition;
     }
 
@@ -114,12 +112,9 @@ public final class TypeVariable
         extends Intern<Unbound>
         implements ReferenceTypeSignature, TypeRepresentable, ThrowsSignature {
 
-        private static final WeakHashMap<Unbound, WeakReference<Unbound>> internment = new WeakHashMap<>();
-
         private final @NotNull String name;
 
         public Unbound(final @NotNull String name) {
-            super(internment);
             this.name = name;
         }
 

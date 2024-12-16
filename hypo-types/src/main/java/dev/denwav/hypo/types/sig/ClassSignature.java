@@ -27,12 +27,11 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public final class ClassSignature extends Intern<ClassSignature> implements TypeRepresentable {
-
-    private static final WeakHashMap<ClassSignature, WeakReference<ClassSignature>> internment = new WeakHashMap<>();
 
     private final @NotNull List<? extends TypeParameter> typeParameters;
     private final @NotNull ClassTypeSignature superClass;
@@ -58,7 +57,6 @@ public final class ClassSignature extends Intern<ClassSignature> implements Type
         final @NotNull ClassTypeSignature superClass,
         final @NotNull List<? extends ClassTypeSignature> superInterfaces
     ) {
-        super(internment);
         this.typeParameters = List.copyOf(typeParameters);
         this.superClass = superClass;
         this.superInterfaces = List.copyOf(superInterfaces);

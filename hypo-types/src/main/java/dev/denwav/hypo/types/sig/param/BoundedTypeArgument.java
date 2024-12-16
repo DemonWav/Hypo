@@ -25,12 +25,10 @@ import dev.denwav.hypo.types.sig.TypeSignature;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
 public final class BoundedTypeArgument extends Intern<BoundedTypeArgument> implements TypeArgument, TypeRepresentable {
-
-    private static final WeakHashMap<BoundedTypeArgument, WeakReference<BoundedTypeArgument>> internment =
-        new WeakHashMap<>();
 
     private final @NotNull WildcardBound bounds;
     private final @NotNull TypeSignature signature;
@@ -46,7 +44,6 @@ public final class BoundedTypeArgument extends Intern<BoundedTypeArgument> imple
         final @NotNull WildcardBound bounds,
         final @NotNull TypeSignature signature
     ) {
-        super(internment);
         this.bounds = bounds;
         this.signature = signature;
     }

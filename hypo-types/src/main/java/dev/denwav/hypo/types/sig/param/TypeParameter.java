@@ -28,13 +28,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class TypeParameter extends Intern<TypeParameter> implements TypeRepresentable {
-
-    private static final WeakHashMap<TypeParameter, WeakReference<TypeParameter>> internment = new WeakHashMap<>();
 
     private final @NotNull String name;
     private final @Nullable ReferenceTypeSignature classBound;
@@ -66,7 +65,6 @@ public final class TypeParameter extends Intern<TypeParameter> implements TypeRe
         final @Nullable ReferenceTypeSignature classBound,
         final @NotNull List<? extends ReferenceTypeSignature> interfaceBounds
     ) {
-        super(internment);
         this.name = name;
         this.classBound = classBound;
         this.interfaceBounds = List.copyOf(interfaceBounds);

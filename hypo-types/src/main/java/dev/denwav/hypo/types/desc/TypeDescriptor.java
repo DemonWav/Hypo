@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.desc;
 
+import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.parsing.JvmTypeParser;
 import dev.denwav.hypo.types.sig.TypeSignature;
@@ -31,6 +32,12 @@ public interface TypeDescriptor extends TypeRepresentable {
         return parse(text, 0);
     }
     static @NotNull TypeDescriptor parse(final @NotNull String text, final int from) {
+        if (text.length() > 1 && from == 0) {
+            final TypeDescriptor r = Intern.tryFind(ClassTypeDescriptor.class, text);
+            if (r != null) {
+                return r;
+            }
+        }
         return JvmTypeParser.parseTypeDescriptor(text, from);
     }
 }

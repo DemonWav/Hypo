@@ -29,17 +29,13 @@ import org.junit.jupiter.api.Test;
 class InternTest {
 
     @Test
-    void testIntern() throws NoSuchFieldException, IllegalAccessException {
-        final Map<?, ?> map = (WeakHashMap<?, ?>) MethodHandles.privateLookupIn(ClassTypeDescriptor.class, MethodHandles.lookup())
-            .findStaticVarHandle(ClassTypeDescriptor.class, "internment", WeakHashMap.class)
-            .get();
-
+    void testIntern() {
         final TypeDescriptor first = TypeDescriptor.parse("Ljava/lang/String;");
         final TypeDescriptor second = TypeDescriptor.parse("Ljava/lang/String;");
         final TypeDescriptor third = ClassTypeDescriptor.of("java/lang/String");
 
         Assertions.assertSame(first, second);
         Assertions.assertSame(first, third);
-        Assertions.assertEquals(1, map.size());
+        Assertions.assertEquals(1, Intern.internmentSize(ClassTypeDescriptor.class));
     }
 }

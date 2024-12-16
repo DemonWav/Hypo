@@ -25,11 +25,13 @@ import dev.denwav.hypo.types.sig.ThrowsSignature;
 import dev.denwav.hypo.types.sig.TypeSignature;
 import dev.denwav.hypo.types.sig.param.TypeParameter;
 import dev.denwav.hypo.types.sig.param.TypeVariable;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -37,18 +39,8 @@ import org.junit.jupiter.api.Test;
 
 class MethodSignatureTest {
 
-    private static final VarHandle methodSigInternment;
-    static {
-        try {
-            methodSigInternment = MethodHandles.privateLookupIn(MethodSignature.class, MethodHandles.lookup())
-                .findStaticVarHandle(MethodSignature.class, "internment", WeakHashMap.class);
-        } catch (final NoSuchFieldException | IllegalAccessException e) {
-            throw new LinkageError();
-        }
-    }
-
     @Test
-    void testMethodSig() {
+    void testMethodSig() throws ExecutionException, InterruptedException {
         final var primitives = List.of(PrimitiveType.values());
 
         final List<TypeMapping<TypeSignature>> classTypes = List.of(
@@ -83,11 +75,11 @@ class MethodSignatureTest {
             .toList();
 
         final List<TypeMapping<? extends TypeSignature>> returnTypes = Stream.concat(
-            Stream
-                .concat(
-                    primitives.stream().map(TypeMapping::of),
-                    classTypes.stream().filter(t -> t.types().size() == 1)
-                ),
+                Stream
+                    .concat(
+                        primitives.stream().map(TypeMapping::of),
+                        classTypes.stream().filter(t -> t.types().size() == 1)
+                    ),
                 Stream.of(TypeMapping.of(VoidType.INSTANCE))
             )
             .flatMap(t -> {
@@ -114,32 +106,42 @@ class MethodSignatureTest {
             )
         );
 
-        int counter = 0;
+        final AtomicLong counter = new AtomicLong(0);
 
-        for (final TypeMapping<? extends TypeSignature> param1 : parameters) {
-            for (final TypeMapping<? extends TypeSignature> param2 : parameters) {
-                for (final TypeMapping<? extends TypeSignature> param3 : parameters) {
-                    final var paramTypes = Stream.of(param1, param2, param3)
-                        .flatMap(t -> t.types().stream())
-                        .toList();
+        try (final ExecutorService pool = Executors.newWorkStealingPool()) {
+            final ArrayList<Future<?>> tasks = new ArrayList<>();
 
-                    for (final TypeMapping<? extends TypeSignature> returnType : returnTypes) {
-                        for (final TypeMapping<ThrowsSignature> throwsType : throwsTypes) {
-                            final var typeParams = Stream.of(param1, param2, param3, returnType, throwsType)
-                                .flatMap(t -> t.params().stream())
+            for (final TypeMapping<? extends TypeSignature> param1 : parameters) {
+                tasks.add(pool.submit(() -> {
+                    for (final TypeMapping<? extends TypeSignature> param2 : parameters) {
+                        for (final TypeMapping<? extends TypeSignature> param3 : parameters) {
+                            final var paramTypes = Stream.of(param1, param2, param3)
+                                .flatMap(t -> t.types().stream())
                                 .toList();
 
-                            final MethodSignature sig = MethodSignature.of(typeParams, paramTypes, returnType.types().getFirst(), throwsType.types());
-                            Assertions.assertEquals(sig, MethodSignature.parse(sig.asInternal()), "Internal " + sig.asInternal());
+                            for (final TypeMapping<? extends TypeSignature> returnType : returnTypes) {
+                                for (final TypeMapping<ThrowsSignature> throwsType : throwsTypes) {
+                                    final var typeParams = Stream.of(param1, param2, param3, returnType, throwsType)
+                                        .flatMap(t -> t.params().stream())
+                                        .toList();
 
-                            counter++;
-                            if (counter % 1_000_000 == 0) {
-                                System.out.printf("Tested %,d permutations...%n", counter);
-                                System.out.printf("MethodSignature internment: %,d %n", ((Map<?, ?>) methodSigInternment.get()).size());
+                                    final MethodSignature sig = MethodSignature.of(typeParams, paramTypes, returnType.types().getFirst(), throwsType.types());
+                                    Assertions.assertEquals(sig, MethodSignature.parse(sig.asInternal()), "Internal " + sig.asInternal());
+
+                                    final long count = counter.incrementAndGet();
+                                    if (count % 1_000_000L == 0L) {
+                                        System.out.printf("Tested %,d permutations...%n", count);
+                                        System.out.printf("MethodSignature internment: %,d %n", Intern.internmentSize(MethodSignature.class));
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                }));
+            }
+
+            for (final Future<?> task : tasks) {
+                task.get();
             }
         }
     }
@@ -152,9 +154,11 @@ class MethodSignatureTest {
         public static <T> TypeMapping<T> of(final @NotNull List<TypeParameter> params, final @NotNull List<T> types) {
             return new TypeMapping<>(params, types);
         }
+
         public static <T> TypeMapping<T> of(final @NotNull TypeParameter param, final @NotNull List<T> types) {
             return new TypeMapping<>(List.of(param), types);
         }
+
         public static <T> TypeMapping<T> of(final @NotNull List<T> types) {
             return new TypeMapping<>(List.of(), types);
         }
@@ -162,9 +166,11 @@ class MethodSignatureTest {
         public static <T> TypeMapping<T> of(final @NotNull List<TypeParameter> params, final @NotNull T type) {
             return new TypeMapping<>(params, List.of(type));
         }
+
         public static <T> TypeMapping<T> of(final @NotNull TypeParameter param, final @NotNull T type) {
             return new TypeMapping<>(List.of(param), List.of(type));
         }
+
         public static <T> TypeMapping<T> of(final @NotNull T type) {
             return new TypeMapping<>(List.of(), List.of(type));
         }

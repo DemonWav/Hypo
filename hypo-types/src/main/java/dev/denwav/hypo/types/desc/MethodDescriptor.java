@@ -21,6 +21,7 @@ package dev.denwav.hypo.types.desc;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.parsing.JvmTypeParser;
+import dev.denwav.hypo.types.sig.ClassTypeSignature;
 import dev.denwav.hypo.types.sig.MethodSignature;
 import dev.denwav.hypo.types.sig.TypeSignature;
 import java.lang.ref.WeakReference;
@@ -28,13 +29,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public final class MethodDescriptor extends Intern<MethodDescriptor> implements TypeRepresentable {
-
-    private static final WeakHashMap<MethodDescriptor, WeakReference<MethodDescriptor>> internment =
-        new WeakHashMap<>();
 
     final @NotNull List<? extends TypeDescriptor> parameters;
     final @NotNull TypeDescriptor returnType;
@@ -50,6 +49,12 @@ public final class MethodDescriptor extends Intern<MethodDescriptor> implements 
         return parse(text, 0);
     }
     public static @NotNull MethodDescriptor parse(final String text, final int from) {
+        if (text.length() > 1 && from == 0) {
+            final MethodDescriptor r = Intern.tryFind(MethodDescriptor.class, text);
+            if (r != null) {
+                return r;
+            }
+        }
         return JvmTypeParser.parseMethodDescriptor(text, from);
     }
 
@@ -57,7 +62,6 @@ public final class MethodDescriptor extends Intern<MethodDescriptor> implements 
         final @NotNull List<? extends TypeDescriptor> parameters,
         final @NotNull TypeDescriptor returnType
     ) {
-        super(internment);
         this.parameters = List.copyOf(parameters);
         this.returnType = returnType;
     }

@@ -22,13 +22,14 @@ import dev.denwav.hypo.types.desc.ArrayTypeDescriptor;
 import dev.denwav.hypo.types.desc.ClassTypeDescriptor;
 import dev.denwav.hypo.types.desc.MethodDescriptor;
 import dev.denwav.hypo.types.desc.TypeDescriptor;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -37,19 +38,9 @@ import org.junit.jupiter.api.Test;
 @DisplayName("MethodDescriptor Tests")
 class MethodDescriptorTest {
 
-    private static final VarHandle methodDescInternment;
-    static {
-        try {
-            methodDescInternment = MethodHandles.privateLookupIn(MethodDescriptor.class, MethodHandles.lookup())
-                .findStaticVarHandle(MethodDescriptor.class, "internment", WeakHashMap.class);
-        } catch (final NoSuchFieldException | IllegalAccessException e) {
-            throw new LinkageError();
-        }
-    }
-
     @Test
     @DisplayName("Test MethodDescriptor.parse() and MethodDescriptor.asInternal()")
-    void testParse() {
+    void testParse() throws ExecutionException, InterruptedException {
         final TypeDescriptor[] testTypes = Arrays.stream(new TypeDescriptor[]{
             PrimitiveType.CHAR,
             PrimitiveType.BYTE,
@@ -72,29 +63,39 @@ class MethodDescriptorTest {
         final TypeDescriptor[] params = new TypeDescriptor[4];
         final List<TypeDescriptor> paramList = Arrays.asList(params);
 
-        int counter = 0;
+        final AtomicLong counter = new AtomicLong(0);
 
-        for (final TypeDescriptor param0 : testTypes) {
-            for (final TypeDescriptor param1 : testTypes) {
-                for (final TypeDescriptor param2 : testTypes) {
-                    for (final TypeDescriptor param3 : testTypes) {
-                        params[0] = param0;
-                        params[1] = param1;
-                        params[2] = param2;
-                        params[3] = param3;
+        try (final ExecutorService pool = Executors.newWorkStealingPool()) {
+            final ArrayList<Future<?>> tasks = new ArrayList<>();
 
-                        for (final TypeDescriptor returnType : returnTypes) {
-                            final MethodDescriptor dec = MethodDescriptor.of(paramList, returnType);
-                            Assertions.assertEquals(dec, MethodDescriptor.parse(dec.asInternal()));
+            for (final TypeDescriptor param0 : testTypes) {
+                tasks.add(pool.submit(() -> {
+                    for (final TypeDescriptor param1 : testTypes) {
+                        for (final TypeDescriptor param2 : testTypes) {
+                            for (final TypeDescriptor param3 : testTypes) {
+                                params[0] = param0;
+                                params[1] = param1;
+                                params[2] = param2;
+                                params[3] = param3;
 
-                            counter++;
-                            if (counter % 1_000_000 == 0) {
-                                System.out.printf("Tested %,d permutations...%n", counter);
-                                System.out.printf("MethodDescriptor internment: %,d %n", ((Map<?, ?>) methodDescInternment.get()).size());
+                                for (final TypeDescriptor returnType : returnTypes) {
+                                    final MethodDescriptor dec = MethodDescriptor.of(paramList, returnType);
+                                    Assertions.assertEquals(dec, MethodDescriptor.parse(dec.asInternal()));
+
+                                    final long count = counter.incrementAndGet();
+                                    if (count % 1_000_000L == 0L) {
+                                        System.out.printf("Tested %,d permutations...%n", count);
+                                        System.out.printf("MethodDescriptor internment: %,d %n", Intern.internmentSize(MethodDescriptor.class));
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                }));
+            }
+
+            for (final Future<?> task : tasks) {
+                task.get();
             }
         }
     }

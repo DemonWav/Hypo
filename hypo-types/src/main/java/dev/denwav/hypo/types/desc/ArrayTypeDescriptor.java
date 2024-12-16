@@ -23,12 +23,10 @@ import dev.denwav.hypo.types.sig.ArrayTypeSignature;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
 public final class ArrayTypeDescriptor extends Intern<ArrayTypeDescriptor> implements TypeDescriptor {
-
-    private static final WeakHashMap<ArrayTypeDescriptor, WeakReference<ArrayTypeDescriptor>> internment =
-        new WeakHashMap<>();
 
     private final int dimension;
     private final @NotNull TypeDescriptor baseType;
@@ -41,7 +39,6 @@ public final class ArrayTypeDescriptor extends Intern<ArrayTypeDescriptor> imple
         final int dimension,
         final @NotNull TypeDescriptor baseType
     ) {
-        super(internment);
         this.dimension = dimension;
         this.baseType = baseType;
     }

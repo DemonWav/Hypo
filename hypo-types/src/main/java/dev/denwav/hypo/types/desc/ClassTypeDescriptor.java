@@ -24,12 +24,10 @@ import dev.denwav.hypo.types.sig.ClassTypeSignature;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
 public final class ClassTypeDescriptor extends Intern<ClassTypeDescriptor> implements TypeDescriptor {
-
-    private static final WeakHashMap<ClassTypeDescriptor, WeakReference<ClassTypeDescriptor>> internment =
-        new WeakHashMap<>();
 
     private final @NotNull String name;
 
@@ -38,7 +36,6 @@ public final class ClassTypeDescriptor extends Intern<ClassTypeDescriptor> imple
     }
 
     private ClassTypeDescriptor(final @NotNull String name) {
-        super(internment);
         this.name = name;
     }
 

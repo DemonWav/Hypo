@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.sig;
 
+import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeBindable;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.TypeVariableBinder;
@@ -33,6 +34,13 @@ public interface TypeSignature extends TypeBindable, TypeRepresentable {
         return parse(text, 0);
     }
     static @NotNull TypeSignature parse(final @NotNull String text, final int from) {
+        if (text.length() > 1 && from == 0) {
+            final TypeSignature r = Intern.tryFind(ClassTypeSignature.class, text);
+            if (r != null) {
+                return r;
+            }
+        }
+
         return JvmTypeParser.parseTypeSignature(text, from);
     }
 
