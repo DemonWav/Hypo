@@ -26,7 +26,7 @@ hypoJava {
     javadocLibs.add(libs.errorprone.annotations)
     javadocLibs.add(libs.lorenz)
     javadocLibs.add(libs.bombe)
-    javadocProjects.addAll(projects.hypoHydrate, projects.hypoCore, projects.hypoModel)
+    javadocProjects.addAll(projects.hypoHydrate, projects.hypoCore, projects.hypoModel, projects.hypoTypes)
 }
 
 hypoPublish {

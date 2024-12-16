@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.model.data;
 
+import dev.denwav.hypo.types.desc.MethodDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 /**

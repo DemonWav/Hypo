@@ -9,6 +9,8 @@ plugins {
 dependencies {
     compileOnlyApi(libs.annotations)
     api(libs.slf4j.api)
+
+    api(projects.hypoTypes)
 }
 
 tasks.jar {
@@ -26,4 +28,8 @@ hypoJava {
 
 hypoPublish {
     component = components.named("java")
+}
+
+tasks.compileTestJava {
+    options.release = 21
 }

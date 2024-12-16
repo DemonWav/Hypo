@@ -42,7 +42,7 @@ afterEvaluate {
             classpath += sources
         }
 
-        val base = "https://javadoc.io/doc"
+        val base = "https://static.javadoc.io/"
         hypoJava.javadocLibs.get().forEach { m ->
             val url = "$base/${m.module.group}/${m.module.name}/${m.versionConstraint}"
             opt.links(url)

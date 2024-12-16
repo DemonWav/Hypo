@@ -27,6 +27,7 @@ import dev.denwav.hypo.model.data.FieldData;
 import dev.denwav.hypo.model.data.LazyClassData;
 import dev.denwav.hypo.model.data.MethodData;
 import dev.denwav.hypo.model.data.Visibility;
+import dev.denwav.hypo.types.desc.MethodDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -44,7 +45,6 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.RecordComponentNode;
 
 import static dev.denwav.hypo.asm.HypoAsmUtil.toJvmType;
-import static dev.denwav.hypo.model.data.MethodDescriptor.parseDescriptor;
 import static org.objectweb.asm.Type.getType;
 
 /**
@@ -114,7 +114,7 @@ public class AsmClassData extends LazyClassData {
                     throw HypoModelUtil.rethrow(e);
                 }
                 if (outerClass != null) {
-                    final MethodData outerMethod = outerClass.method(this.node.outerMethod, parseDescriptor(this.node.outerMethodDesc));
+                    final MethodData outerMethod = outerClass.method(this.node.outerMethod, MethodDescriptor.parse(this.node.outerMethodDesc));
                     if (outerMethod != null) {
                         return outerMethod.isStatic();
                     }

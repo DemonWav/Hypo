@@ -1,0 +1,84 @@
+/*
+ * Hypo, an extensible and pluggable Java bytecode analytical model.
+ *
+ * Copyright (C) 2023  Kyle Wood (DenWav)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License only.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package dev.denwav.hypo.types.desc;
+
+import dev.denwav.hypo.types.HypoTypesUtil;
+import dev.denwav.hypo.types.Intern;
+import dev.denwav.hypo.types.sig.ClassTypeSignature;
+import java.lang.ref.WeakReference;
+import java.util.Objects;
+import java.util.WeakHashMap;
+import org.jetbrains.annotations.NotNull;
+
+public final class ClassTypeDescriptor extends Intern<ClassTypeDescriptor> implements TypeDescriptor {
+
+    private static final WeakHashMap<ClassTypeDescriptor, WeakReference<ClassTypeDescriptor>> internment =
+        new WeakHashMap<>();
+
+    private final @NotNull String name;
+
+    public static @NotNull ClassTypeDescriptor of(final @NotNull String name) {
+        return new ClassTypeDescriptor(HypoTypesUtil.normalizedClassName(name)).intern();
+    }
+
+    private ClassTypeDescriptor(final @NotNull String name) {
+        super(internment);
+        this.name = name;
+    }
+
+    @Override
+    public void asReadable(final @NotNull StringBuilder sb) {
+        sb.append(this.name.replace('.', '/'));
+    }
+
+    @Override
+    public void asInternal(final @NotNull StringBuilder sb) {
+        sb.append('L');
+        sb.append(this.name);
+        sb.append(';');
+    }
+
+    @Override
+    public @NotNull ClassTypeSignature asSignature() {
+        return ClassTypeSignature.of(null, this.name, null);
+    }
+
+    public @NotNull String getName() {
+        return this.name;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof ClassTypeDescriptor)) {
+            return false;
+        }
+        final ClassTypeDescriptor classTypeDescriptor = (ClassTypeDescriptor) o;
+        return Objects.equals(this.name, classTypeDescriptor.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.name);
+    }
+
+    @Override
+    public String toString() {
+        return this.asReadable();
+    }
+}

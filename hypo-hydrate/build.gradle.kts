@@ -3,11 +3,27 @@ plugins {
     `hypo-java`
     `hypo-module`
     `hypo-publish`
+    `hypo-test-scenario`
+}
+
+hypoTest {
+    testDataProject = projects.hypoHydrate.hypoHydrateTestData
+}
+
+repositories {
+    // for tests
+    maven("https://maven.quiltmc.org/repository/release/")
 }
 
 dependencies {
     implementation(projects.hypoCore)
     implementation(libs.jgrapht)
+
+    testImplementation(projects.hypoTest)
+}
+
+tasks.compileTestJava {
+    options.release = 21
 }
 
 tasks.jar {

@@ -22,10 +22,9 @@ import dev.denwav.hypo.model.data.AbstractFieldData;
 import dev.denwav.hypo.model.data.ClassData;
 import dev.denwav.hypo.model.data.FieldData;
 import dev.denwav.hypo.model.data.Visibility;
-import dev.denwav.hypo.model.data.types.JvmType;
+import dev.denwav.hypo.types.desc.TypeDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldNode;
 
 /**
@@ -56,8 +55,8 @@ public class AsmFieldData extends AbstractFieldData implements FieldData {
     }
 
     @Override
-    public @NotNull JvmType fieldType() {
-        return HypoAsmUtil.toJvmType(Type.getType(this.node.desc));
+    public @NotNull TypeDescriptor fieldType() {
+        return TypeDescriptor.parse(this.node.desc);
     }
 
     @Override

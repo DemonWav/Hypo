@@ -18,8 +18,9 @@
 
 package dev.denwav.hypo.model.data;
 
-import dev.denwav.hypo.model.data.types.JvmType;
-import dev.denwav.hypo.model.data.types.PrimitiveType;
+import dev.denwav.hypo.types.PrimitiveType;
+import dev.denwav.hypo.types.desc.MethodDescriptor;
+import dev.denwav.hypo.types.desc.TypeDescriptor;
 import java.util.List;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +51,7 @@ public interface MethodData extends MemberData {
      * @see #descriptor()
      */
     default @NotNull String descriptorText() {
-        return this.descriptor().toInternalString();
+        return this.descriptor().asInternal();
     }
 
     /**
@@ -85,8 +86,8 @@ public interface MethodData extends MemberData {
      * @return This method's list of parameters.
      * @see #descriptor()
      */
-    default @NotNull List<@NotNull JvmType> params() {
-        return this.descriptor().getParams();
+    default @NotNull List<? extends @NotNull TypeDescriptor> params() {
+        return this.descriptor().getParameters();
     }
 
     /**
@@ -99,8 +100,8 @@ public interface MethodData extends MemberData {
      * @throws IndexOutOfBoundsException If the given index is out of bounds.
      * @see #paramLvt(int)
      */
-    default @NotNull JvmType param(final int i) {
-        final List<@NotNull JvmType> params = this.descriptor().getParams();
+    default @NotNull TypeDescriptor param(final int i) {
+        final List<? extends @NotNull TypeDescriptor> params = this.descriptor().getParameters();
         if (i < 0 || i >= params.size()) {
             throw new IndexOutOfBoundsException(
                 "Index out of range: " + i + ", list has " + params.size() + " items"
@@ -119,12 +120,12 @@ public interface MethodData extends MemberData {
      * @see #param(int)
      */
     @SuppressWarnings("EmptyCatch")
-    default @Nullable JvmType paramLvt(final int i) {
-        final List<@NotNull JvmType> params = this.descriptor().getParams();
+    default @Nullable TypeDescriptor paramLvt(final int i) {
+        final List<? extends @NotNull TypeDescriptor> params = this.descriptor().getParameters();
         // `this`
         int index = this.isStatic() ? 0 : 1;
 
-        for (final JvmType param : params) {
+        for (final TypeDescriptor param : params) {
             if (index == i) {
                 return param;
             }
@@ -144,7 +145,7 @@ public interface MethodData extends MemberData {
      * @return This method's return type.
      * @see #descriptor()
      */
-    default @NotNull JvmType returnType() {
+    default @NotNull TypeDescriptor returnType() {
         return this.descriptor().getReturnType();
     }
 

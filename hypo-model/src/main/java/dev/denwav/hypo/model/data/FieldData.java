@@ -18,7 +18,7 @@
 
 package dev.denwav.hypo.model.data;
 
-import dev.denwav.hypo.model.data.types.JvmType;
+import dev.denwav.hypo.types.desc.TypeDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,5 +36,5 @@ public interface FieldData extends MemberData {
      *
      * @return The type of this field data.
      */
-    @NotNull JvmType fieldType();
+    @NotNull TypeDescriptor fieldType();
 }

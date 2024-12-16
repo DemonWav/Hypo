@@ -28,9 +28,9 @@ import dev.denwav.hypo.model.data.ClassData;
 import dev.denwav.hypo.model.data.ConstructorData;
 import dev.denwav.hypo.model.data.HypoKey;
 import dev.denwav.hypo.model.data.MethodData;
-import dev.denwav.hypo.model.data.MethodDescriptor;
-import dev.denwav.hypo.model.data.types.JvmType;
-import dev.denwav.hypo.model.data.types.PrimitiveType;
+import dev.denwav.hypo.types.PrimitiveType;
+import dev.denwav.hypo.types.desc.MethodDescriptor;
+import dev.denwav.hypo.types.desc.TypeDescriptor;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -125,7 +125,7 @@ public class SuperConstructorHydrator implements HydrationProvider<AsmConstructo
             throw new IllegalStateException("Could not determine owner of super method");
         }
 
-        final MethodData targetMethod = targetClass.method("<init>", MethodDescriptor.parseDescriptor(desc));
+        final MethodData targetMethod = targetClass.method("<init>", MethodDescriptor.parse(desc));
         if (!(targetMethod instanceof ConstructorData)) {
             throw new IllegalStateException("Target constructor is not an instance of " + ConstructorData.class.getName());
         }
@@ -476,7 +476,7 @@ public class SuperConstructorHydrator implements HydrationProvider<AsmConstructo
     }
 
     private static int @NotNull [] buildParamIndexMapping(final @NotNull MethodData data) throws IOException {
-        final List<@NotNull JvmType> targetParams = data.params();
+        final List<? extends @NotNull TypeDescriptor> targetParams = data.params();
         final int[] outputParamIndices = new int[targetParams.size()];
         int currentIndex = 0;
         int currentTargetIndex = 1; // `this` is 0
@@ -485,7 +485,7 @@ public class SuperConstructorHydrator implements HydrationProvider<AsmConstructo
             currentTargetIndex++; // index 1 is the outer class
         }
 
-        for (final JvmType paramType : targetParams) {
+        for (final TypeDescriptor paramType : targetParams) {
             outputParamIndices[currentIndex] = currentTargetIndex;
             currentIndex++;
             currentTargetIndex++;
