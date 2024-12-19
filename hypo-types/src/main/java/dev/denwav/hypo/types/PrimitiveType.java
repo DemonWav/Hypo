@@ -25,14 +25,94 @@ import dev.denwav.hypo.types.sig.TypeSignature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Primitive types in Java, implementation for both {@link TypeDescriptor} and
+ * {@link TypeSignature}.
+ *
+ * <p>There are 8 total primitive types in the JVM:
+ * <table>
+ *     <caption>
+ *         Java Primitive Types
+ *     </caption>
+ *     <tr>
+ *         <th>Name</th>
+ *         <th>Wrapper Type</th>
+ *         <th>Internal Name</th>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code char}</td>
+ *         <td>{@link java.lang.Character java/lang/Character}</td>
+ *         <td>{@code C}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code byte}</td>
+ *         <td>{@link java.lang.Byte java/lang/Byte}</td>
+ *         <td>{@code B}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code short}</td>
+ *         <td>{@link java.lang.Short java/lang/Short}</td>
+ *         <td>{@code S}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code int}</td>
+ *         <td>{@link java.lang.Integer java/lang/Integer}</td>
+ *         <td>{@code I}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code long}</td>
+ *         <td>{@link java.lang.Long java/lang/Long}</td>
+ *         <td>{@code J}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code float}</td>
+ *         <td>{@link java.lang.Float java/lang/Float}</td>
+ *         <td>{@code F}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code double}</td>
+ *         <td>{@link java.lang.Double java/lang/Double}</td>
+ *         <td>{@code D}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code boolean}</td>
+ *         <td>{@link java.lang.Boolean java/lang/Boolean}</td>
+ *         <td>{@code Z}</td>
+ *     </tr>
+ * </table>
+ */
 public enum PrimitiveType implements TypeDescriptor, TypeSignature {
+    /**
+     * {@code char}
+     */
     CHAR("char", 'C', "java/lang/Character"),
+    /**
+     * {@code byte}
+     */
     BYTE("byte", 'B', "java/lang/Byte"),
+    /**
+     * {@code short}
+     */
     SHORT("short", 'S', "java/lang/Short"),
+    /**
+     * {@code int}
+     */
     INT("int", 'I', "java/lang/Integer"),
+    /**
+     * {@code long}
+     */
     LONG("long", 'J', "java/lang/Long"),
+    /**
+     * {@code float}
+     */
     FLOAT("float", 'F', "java/lang/Float"),
+    /**
+     * {@code double}
+     */
     DOUBLE("double", 'D', "java/lang/Double"),
+    /**
+     * {@code boolean}
+     */
     BOOLEAN("boolean", 'Z', "java/lang/Boolean"),
     ;
 

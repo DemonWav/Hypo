@@ -27,10 +27,20 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A {@link TypeDescriptor} representing a class type. Class (or reference) types follow the internal format of
+ * {@code L<class_name>;}.
+ */
 public final class ClassTypeDescriptor extends Intern<ClassTypeDescriptor> implements TypeDescriptor {
 
     private final @NotNull String name;
 
+    /**
+     * Create a {@link ClassTypeDescriptor} instance.
+     *
+     * @param name The class name for the new type.
+     * @return The new {@link ClassTypeDescriptor}.
+     */
     public static @NotNull ClassTypeDescriptor of(final @NotNull String name) {
         return new ClassTypeDescriptor(HypoTypesUtil.normalizedClassName(name)).intern();
     }
@@ -56,6 +66,12 @@ public final class ClassTypeDescriptor extends Intern<ClassTypeDescriptor> imple
         return ClassTypeSignature.of(null, this.name, null);
     }
 
+    /**
+     * Get the class name for this type. The name does not include the {@code L} and {@code ;} format characters as seen
+     * in the internal name format.
+     *
+     * @return The class name for this type.
+     */
     public @NotNull String getName() {
         return this.name;
     }

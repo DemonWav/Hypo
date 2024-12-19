@@ -20,6 +20,24 @@ package dev.denwav.hypo.types;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A value which represents a type in Java. "types" include 5 major categories:
+ * <ul>
+ *     <li>{@link dev.denwav.hypo.types.desc.TypeDescriptor TypeDescriptor}</li>
+ *     <li>{@link dev.denwav.hypo.types.desc.MethodDescriptor MethodDescriptor}</li>
+ *     <li>{@link dev.denwav.hypo.types.sig.TypeSignature TypeSignature}</li>
+ *     <li>{@link dev.denwav.hypo.types.sig.MethodSignature MethodSignature}</li>
+ *     <li>{@link dev.denwav.hypo.types.sig.ClassSignature ClassSignature}</li>
+ * </ul>
+ *
+ * <p>All types can be represented in two different ways, {@link #asReadable()}, and {@link #asInternal()}. Generally
+ * "readable" will be in source code format, as would appear in a Java source file. Internal format matches exactly what
+ * is present in compiled Java bytecode for the given type.
+ *
+ * <p>Implementations of this interface should have their {@link Object#toString() toString()} method defer to
+ * {@link #asReadable()} to assist with debugging. {@link #asInternal()} should be used for serialization, as it matches
+ * 1:1 with corresponding {@code parse()} methods for each type.
+ */
 public interface TypeRepresentable {
 
     /**

@@ -22,6 +22,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * General utility class used by {@code hypo-types}.
+ */
 public final class HypoTypesUtil {
 
     private HypoTypesUtil() {}

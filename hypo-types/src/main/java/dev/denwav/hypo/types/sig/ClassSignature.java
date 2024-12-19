@@ -21,6 +21,7 @@ package dev.denwav.hypo.types.sig;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.TypeVariableBinder;
+import dev.denwav.hypo.types.parsing.JvmTypeParseFailureException;
 import dev.denwav.hypo.types.parsing.JvmTypeParser;
 import dev.denwav.hypo.types.sig.param.TypeParameter;
 import java.lang.ref.WeakReference;
@@ -45,10 +46,10 @@ public final class ClassSignature extends Intern<ClassSignature> implements Type
         return new ClassSignature(typeParameters, superClass, superInterfaces).intern();
     }
 
-    public static @NotNull ClassSignature parse(final String text) {
+    public static @NotNull ClassSignature parse(final String text) throws JvmTypeParseFailureException {
         return parse(text, 0);
     }
-    public static @NotNull ClassSignature parse(final String text, final int from) {
+    public static @NotNull ClassSignature parse(final String text, final int from) throws JvmTypeParseFailureException {
         return JvmTypeParser.parseClassSignature(text, from);
     }
 

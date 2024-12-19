@@ -41,22 +41,113 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+/**
+ * Simple parser for internal JVM type names, descriptors, and signatures.
+ */
 public final class JvmTypeParser {
 
     private JvmTypeParser() {
     }
 
-    // Type Descriptor
+    // Public API
 
-    public static @NotNull TypeDescriptor parseTypeDescriptor(final @NotNull String text, final int from) {
+    /**
+     * Parse the given text, starting at the given index, into a new {@link TypeDescriptor}.
+     *
+     * @param text The text to parse.
+     * @param from The index to start parsing from.
+     * @return The {@link TypeDescriptor}, or {@code null} if the text is not a valid type descriptor.
+     */
+    public static @Nullable TypeDescriptor parseTypeDescriptor(
+        final @NotNull String text,
+        final int from
+    ) throws JvmTypeParseFailureException {
         final ParserState source = new ParserState(text, from);
         if (consumeTypeDesc(source)) {
             return source.getLastResult();
         }
-
-        throw new IllegalArgumentException("text is not a valid type descriptor: " + text.substring(from));
+        return null;
     }
+
+    /**
+     * Parse the given text, starting at the given index, into a new {@link MethodDescriptor}.
+     *
+     * @param text The text to parse.
+     * @param from The index to start parsing from.
+     * @return The {@link MethodDescriptor}, or {@code null} if the text is not a valid method descriptor.
+     */
+    public static @Nullable MethodDescriptor parseMethodDescriptor(
+        final @NotNull String text,
+        final int from
+    ) {
+        final ParserState source = new ParserState(text, from);
+        if (consumeMethodDesc(source)) {
+            return source.getLastResult();
+        }
+        return null;
+    }
+
+    /**
+     * Parse the given text, starting at the given index, into a new {@link TypeSignature}.
+     *
+     * @param text The text to parse.
+     * @param from The index to start parsing from.
+     * @return The {@link TypeSignature}, or {@code null} if the text is not a valid type signature.
+     */
+    public static @Nullable TypeSignature parseTypeSignature(
+        final @NotNull String text,
+        final int from
+    ) throws JvmTypeParseFailureException {
+        final ParserState source = new ParserState(text, from);
+        if (consumeTypeSig(source)) {
+            return source.getLastResult();
+        }
+        return null;
+    }
+
+    /**
+     * Parse the given text, starting at the given index, into a new {@link MethodSignature}.
+     *
+     * @param text The text to parse.
+     * @param from The index to start parsing from.
+     * @return The {@link MethodSignature}.
+     * @throws JvmTypeParseFailureException If the given text does not represent a valid JVM method signature.
+     */
+    public static @NotNull MethodSignature parseMethodSignature(
+        final @NotNull String text,
+        final int from
+    ) throws JvmTypeParseFailureException {
+        final ParserState source = new ParserState(text, from);
+        if (consumeMethodSignature(source)) {
+            return source.getLastResult();
+        }
+
+        throw new JvmTypeParseFailureException("text is not a valid method signature: " + text.substring(from));
+    }
+
+    /**
+     * Parse the given text, starting at the given index, into a new {@link ClassSignature}.
+     *
+     * @param text The text to parse.
+     * @param from The index to start parsing from.
+     * @return The {@link ClassSignature}.
+     * @throws JvmTypeParseFailureException If the given text does not represent a valid JVM class signature.
+     */
+    public static @NotNull ClassSignature parseClassSignature(
+        final @NotNull String text,
+        final int from
+    ) throws JvmTypeParseFailureException {
+        final ParserState source = new ParserState(text, from);
+        if (consumeClassSig(source)) {
+            return source.getLastResult();
+        }
+
+        throw new JvmTypeParseFailureException("text is not a valid class signature: " + text.substring(from));
+    }
+
+    // Type Descriptor
 
     private static boolean consumeTypeDesc(final @NotNull ParserState source) {
         if (source.isAtEnd()) {
@@ -127,15 +218,6 @@ public final class JvmTypeParser {
         return source.advanceIfSet(ClassTypeDescriptor.of(className));
     }
 
-    public static MethodDescriptor parseMethodDescriptor(final @NotNull String text, final int from) {
-        final ParserState source = new ParserState(text, from);
-        if (consumeMethodDesc(source)) {
-            return source.getLastResult();
-        }
-
-        throw new IllegalArgumentException("text is not a valid method descriptor: " + text.substring(from));
-    }
-
     private static boolean consumeMethodDesc(final @NotNull ParserState source) {
         if (source.current() != '(') {
             return false;
@@ -163,18 +245,6 @@ public final class JvmTypeParser {
     }
 
     // Type Signature
-
-    public static @NotNull TypeSignature parseTypeSignature(
-        final @NotNull String text,
-        final int from
-    ) {
-        final ParserState source = new ParserState(text, from);
-        if (consumeTypeSig(source)) {
-            return source.getLastResult();
-        }
-
-        throw new IllegalArgumentException("text is not a valid type signature: " + text.substring(from));
-    }
 
     private static boolean consumeTypeSig(final @NotNull ParserState source) {
         if (source.isAtEnd()) {
@@ -363,15 +433,6 @@ public final class JvmTypeParser {
         return source.setLastResult(TypeVariable.unbound(typeName));
     }
 
-    public static @NotNull MethodSignature parseMethodSignature(final @NotNull String text, final int from) {
-        final ParserState source = new ParserState(text, from);
-        if (consumeMethodSignature(source)) {
-            return source.getLastResult();
-        }
-
-        throw new IllegalArgumentException("text is not a valid method signature: " + text.substring(from));
-    }
-
     private static boolean consumeMethodSignature(final @NotNull ParserState source) {
         List<TypeParameter> typeParams;
         if (consumeTypeParameters(source)) {
@@ -485,15 +546,6 @@ public final class JvmTypeParser {
 
         source.advance();
         return consumeTypeSig(source);
-    }
-
-    public static @NotNull ClassSignature parseClassSignature(final @NotNull String text, final int from) {
-        final ParserState source = new ParserState(text, from);
-        if (consumeClassSig(source)) {
-            return source.getLastResult();
-        }
-
-        throw new IllegalArgumentException("text is not a valid class signature: " + text.substring(from));
     }
 
     private static boolean consumeClassSig(final @NotNull ParserState source) {

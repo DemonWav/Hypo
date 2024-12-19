@@ -24,6 +24,11 @@ import dev.denwav.hypo.types.TypeVariableBinder;
 import dev.denwav.hypo.types.sig.param.TypeArgument;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A reference type signature is a subset of {@link TypeSignature} which does not include
+ * {@link dev.denwav.hypo.types.PrimitiveType primitive types} or {@link dev.denwav.hypo.types.VoidType void}. This is
+ * simply a marker interface to denote those types.
+ */
 public interface ReferenceTypeSignature
     extends TypeBindable, TypeSignature, TypeArgument, TypeRepresentable {
 

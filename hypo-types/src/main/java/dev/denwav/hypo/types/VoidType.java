@@ -22,7 +22,18 @@ import dev.denwav.hypo.types.desc.TypeDescriptor;
 import dev.denwav.hypo.types.sig.TypeSignature;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The {@code void} type in Java. This class is an implementation for both {@link TypeDescriptor} and
+ * {@link TypeSignature}. {@code void} is only void when used as the return type in a method descriptor or signature, it
+ * cannot be used as the type for any field or variable.
+ *
+ * <p>The wrapper type for {@code void} is {@link java.lang.Void java/lang/Void}. The internal name for {@code void} is
+ * {@code V}.
+ */
 public enum VoidType implements TypeDescriptor, TypeSignature {
+    /**
+     * The singleton instance of this type object.
+     */
     INSTANCE,
     ;
 

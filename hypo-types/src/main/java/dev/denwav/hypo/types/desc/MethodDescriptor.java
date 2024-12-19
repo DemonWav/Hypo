@@ -20,6 +20,7 @@ package dev.denwav.hypo.types.desc;
 
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
+import dev.denwav.hypo.types.parsing.JvmTypeParseFailureException;
 import dev.denwav.hypo.types.parsing.JvmTypeParser;
 import dev.denwav.hypo.types.sig.ClassTypeSignature;
 import dev.denwav.hypo.types.sig.MethodSignature;
@@ -33,11 +34,32 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A <a href="https://docs.oracle.com/javase/specs/jvms/se23/html/jvms-4.html#jvms-4.3.3">JVM method descriptor</a>.
+ *
+ * <p>Method descriptors consist of 2 parts, a {@link #getParameters() parameter list} and a
+ * {@link #getReturnType() return type}.
+ *
+ * <p>Method descriptors are used by the JVM to wire together method calls and do method call lookups. Method
+ * descriptors do not contain any generic type information.
+ *
+ * <p>This class is immutable.
+ *
+ * @see TypeDescriptor
+ * @see MethodSignature
+ */
 public final class MethodDescriptor extends Intern<MethodDescriptor> implements TypeRepresentable {
 
     final @NotNull List<? extends TypeDescriptor> parameters;
     final @NotNull TypeDescriptor returnType;
 
+    /**
+     * Create a {@link MethodDescriptor} instance.
+     *
+     * @param parameters The parameter types for the new method descriptor.
+     * @param returnType The return type for the new method descriptor.
+     * @return The new {@link MethodDescriptor}.
+     */
     public static @NotNull MethodDescriptor of(
         final @NotNull List<? extends TypeDescriptor> parameters,
         final @NotNull TypeDescriptor returnType
@@ -45,17 +67,48 @@ public final class MethodDescriptor extends Intern<MethodDescriptor> implements 
         return new MethodDescriptor(parameters, returnType).intern();
     }
 
-    public static @NotNull MethodDescriptor parse(final String text) {
+    /**
+     * Parse the given internal JVM method descriptor text into a new {@link MethodDescriptor}.
+     *
+     * <p>This method throws {@link JvmTypeParseFailureException} if the given text is not a valid method descriptor.
+     * Use {@link JvmTypeParser#parseMethodDescriptor(String, int)} if you prefer to have {@code null} be returned
+     * instead.
+     *
+     * @param text The text to parse.
+     * @return The {@link MethodDescriptor}.
+     * @throws JvmTypeParseFailureException If the given text does not represent a valid JVM method descriptor.
+     */
+    public static @NotNull MethodDescriptor parse(final @NotNull String text) throws JvmTypeParseFailureException {
         return parse(text, 0);
     }
-    public static @NotNull MethodDescriptor parse(final String text, final int from) {
+
+    /**
+     * Parse the given internal JVM method descriptor text into a new {@link MethodDescriptor}.
+     *
+     * <p>This method throws {@link JvmTypeParseFailureException} if the given text is not a valid method descriptor.
+     * Use {@link JvmTypeParser#parseMethodDescriptor(String, int)} if you prefer to have {@code null} be returned
+     * instead.
+     *
+     * @param text The text to parse.
+     * @param from The index to start parsing from.
+     * @return The {@link MethodDescriptor}.
+     * @throws JvmTypeParseFailureException If the given text does not represent a valid JVM method descriptor.
+     */
+    public static @NotNull MethodDescriptor parse(
+        final @NotNull String text,
+        final int from
+    ) throws JvmTypeParseFailureException {
         if (text.length() > 1 && from == 0) {
             final MethodDescriptor r = Intern.tryFind(MethodDescriptor.class, text);
             if (r != null) {
                 return r;
             }
         }
-        return JvmTypeParser.parseMethodDescriptor(text, from);
+        final MethodDescriptor result = JvmTypeParser.parseMethodDescriptor(text, from);
+        if (result == null) {
+            throw new JvmTypeParseFailureException("text is not a valid method descriptor: " + text.substring(from));
+        }
+        return result;
     }
 
     private MethodDescriptor(
@@ -89,6 +142,17 @@ public final class MethodDescriptor extends Intern<MethodDescriptor> implements 
         this.returnType.asInternal(sb);
     }
 
+    /**
+     * Return this descriptor as a valid {@link MethodSignature}. Signatures are a super set of descriptors, so the
+     * result of this method is guaranteed to maintain all type information. That is to say, the following code will
+     * evaluate to {@code true}:
+     * <pre><code>
+     *     MethodDescriptor desc = MethodDescriptor.parse(text);
+     *     desc.equals(desc.asSignature().asDescriptor());
+     * </code></pre>
+     *
+     * @return A {@link MethodSignature} which represents the same type as this descriptor.
+     */
     public @NotNull MethodSignature asSignature() {
         final List<TypeSignature> sigParams = this.parameters.stream()
             .map(TypeDescriptor::asSignature)
@@ -101,10 +165,20 @@ public final class MethodDescriptor extends Intern<MethodDescriptor> implements 
         );
     }
 
+    /**
+     * Get the list of parameter types for this method descriptor. The returned list is immutable.
+     *
+     * @return The list of parameter types for this method descriptor.
+     */
     public @NotNull List<? extends TypeDescriptor> getParameters() {
         return this.parameters;
     }
 
+    /**
+     * Get the return type for this method descriptor.
+     *
+     * @return The return type for this method descriptor.
+     */
     public @NotNull TypeDescriptor getReturnType() {
         return this.returnType;
     }

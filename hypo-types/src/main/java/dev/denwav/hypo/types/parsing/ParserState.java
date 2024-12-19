@@ -22,6 +22,9 @@ import dev.denwav.hypo.types.HypoTypesUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Internal parser class used by {@link JvmTypeParser}.
+ */
 /* package */ final class ParserState {
 
     private final @NotNull String text;
@@ -31,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
     private @Nullable Object lastResult = null;
 
-    ParserState(final @NotNull String text, final int from) {
+    /* package */ ParserState(final @NotNull String text, final int from) {
         this.text = text;
 
         if (from < 0 || from > text.length()) {
@@ -41,13 +44,13 @@ import org.jetbrains.annotations.Nullable;
     }
 
     @SuppressWarnings("TypeParameterUnusedInFormals")
-    public <T> @Nullable T getLastResultOrNull() {
+    /* package */  <T> @Nullable T getLastResultOrNull() {
         final Object res = this.lastResult;
         this.lastResult = null;
         return HypoTypesUtil.cast(res);
     }
     @SuppressWarnings("TypeParameterUnusedInFormals")
-    public <T> @NotNull T getLastResult() {
+    /* package */  <T> @NotNull T getLastResult() {
         final T res = this.getLastResultOrNull();
         if (res == null) {
             throw new NullPointerException("No last result set");
@@ -55,12 +58,12 @@ import org.jetbrains.annotations.Nullable;
         return res;
     }
 
-    public boolean setLastResult(final @Nullable Object lastResult) {
+    /* package */  boolean setLastResult(final @Nullable Object lastResult) {
         this.lastResult = lastResult;
         return lastResult != null;
     }
 
-    public boolean advanceIfSet(final @Nullable Object lastResult) {
+    /* package */  boolean advanceIfSet(final @Nullable Object lastResult) {
         if (lastResult != null) {
             this.setLastResult(lastResult);
             this.advance();
@@ -69,19 +72,19 @@ import org.jetbrains.annotations.Nullable;
         return false;
     }
 
-    public int currentIndex() {
+    /* package */  int currentIndex() {
         return this.index;
     }
 
-    public boolean isAtStart() {
+    /* package */  boolean isAtStart() {
         return this.index == 0;
     }
 
-    public boolean isAtEnd() {
+    /* package */  boolean isAtEnd() {
         return this.index >= this.text.length();
     }
 
-    public char current() {
+    /* package */  char current() {
         final int currentIndex = this.index;
         if (currentIndex == this.text.length()) {
             return '\0';
@@ -90,12 +93,12 @@ import org.jetbrains.annotations.Nullable;
         }
     }
 
-    public void advanceAndMark() {
+    /* package */  void advanceAndMark() {
         this.advance();
         this.mark();
     }
 
-    public char advance() {
+    /* package */  char advance() {
         if (this.isAtEnd()) {
             return '\0';
         }
@@ -107,15 +110,15 @@ import org.jetbrains.annotations.Nullable;
         }
     }
 
-    public void mark() {
+    /* package */  void mark() {
         this.mark = this.currentIndex();
     }
 
-    public int getMark() {
+    /* package */  int getMark() {
         return this.mark;
     }
 
-    public @NotNull String substringFromMark() {
+    /* package */  @NotNull String substringFromMark() {
         return this.text.substring(this.mark, this.index);
     }
 

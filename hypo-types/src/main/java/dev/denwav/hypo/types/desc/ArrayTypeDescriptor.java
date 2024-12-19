@@ -26,12 +26,27 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A {@link TypeDescriptor} representing an array type. Array types consist of a {@link #getDimension() dimension} and a
+ * {@link #getBaseType() base type}, which can be either a {@link dev.denwav.hypo.types.PrimitiveType PrimitiveType} or
+ * a {@link ClassTypeDescriptor}.
+ *
+ * <p>Array type descriptors have the internal format of {@code [<base_type>}. The leading {@code [} is repeated to
+ * denote the dimensionality of the array, so a 3-dimension array type would start with {@code [[[}.
+ */
 public final class ArrayTypeDescriptor extends Intern<ArrayTypeDescriptor> implements TypeDescriptor {
 
     private final int dimension;
     private final @NotNull TypeDescriptor baseType;
 
-    public static @NotNull ArrayTypeDescriptor of(int dimension, @NotNull TypeDescriptor baseType) {
+    /**
+     * Create a {@link ArrayTypeDescriptor} instance.
+     *
+     * @param dimension The dimension for the new type.
+     * @param baseType The base type for the new type.
+     * @return The new {@link ArrayTypeDescriptor}.
+     */
+    public static @NotNull ArrayTypeDescriptor of(final int dimension, final @NotNull TypeDescriptor baseType) {
         return new ArrayTypeDescriptor(dimension, baseType).intern();
     }
 
@@ -68,10 +83,18 @@ public final class ArrayTypeDescriptor extends Intern<ArrayTypeDescriptor> imple
         return ArrayTypeSignature.of(this.dimension, this.baseType.asSignature());
     }
 
+    /**
+     * Get the dimension of this array type.
+     * @return The dimension of this array type.
+     */
     public int getDimension() {
         return this.dimension;
     }
 
+    /**
+     * Get the base type of this array type.
+     * @return The base type of this array type.
+     */
     public @NotNull TypeDescriptor getBaseType() {
         return this.baseType;
     }

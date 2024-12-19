@@ -16,21 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.denwav.hypo.types.sig;
-
-import dev.denwav.hypo.types.TypeBindable;
-import dev.denwav.hypo.types.TypeRepresentable;
-import dev.denwav.hypo.types.TypeVariableBinder;
-import org.jetbrains.annotations.NotNull;
+package dev.denwav.hypo.types.parsing;
 
 /**
- * {@link ClassTypeSignature Class type signatures} can contain a throws signatures, which are simply a subset of
- * {@link TypeSignature type signatures} - notably {@link ClassTypeSignature class type signatures} and
- * {@link dev.denwav.hypo.types.sig.param.TypeVariable type varaibles}. This is simple a marker interface to denote
- * those types.
+ * General exception type used to indicate a parse failed.
  */
-public interface ThrowsSignature extends TypeBindable, TypeRepresentable {
-
-    @Override
-    @NotNull ThrowsSignature bind(final @NotNull TypeVariableBinder binder);
+public final class JvmTypeParseFailureException extends RuntimeException {
+    /**
+     * Constructor for {@link JvmTypeParseFailureException}.
+     *
+     * @param message The exception message.
+     */
+    public JvmTypeParseFailureException(final String message) {
+        super(message);
+    }
 }

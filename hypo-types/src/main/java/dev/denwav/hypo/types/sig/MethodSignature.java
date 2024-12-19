@@ -23,6 +23,7 @@ import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.TypeVariableBinder;
 import dev.denwav.hypo.types.desc.MethodDescriptor;
 import dev.denwav.hypo.types.desc.TypeDescriptor;
+import dev.denwav.hypo.types.parsing.JvmTypeParseFailureException;
 import dev.denwav.hypo.types.parsing.JvmTypeParser;
 import dev.denwav.hypo.types.sig.param.TypeParameter;
 import java.lang.ref.WeakReference;
@@ -61,10 +62,10 @@ public final class MethodSignature extends Intern<MethodSignature> implements Ty
         this.throwsSignatures = List.copyOf(throwsSignatures);
     }
 
-    public static @NotNull MethodSignature parse(final @NotNull String text) {
+    public static @NotNull MethodSignature parse(final @NotNull String text) throws JvmTypeParseFailureException {
         return parse(text, 0);
     }
-    public static @NotNull MethodSignature parse(final @NotNull String text, final int from) {
+    public static @NotNull MethodSignature parse(final @NotNull String text, final int from) throws JvmTypeParseFailureException {
         if (text.length() > 1 && from == 0) {
             final MethodSignature r = Intern.tryFind(MethodSignature.class, text);
             if (r != null) {
