@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.desc;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.parsing.JvmTypeParseFailureException;
@@ -44,6 +45,7 @@ import org.jetbrains.annotations.NotNull;
  * @see MethodDescriptor
  * @see TypeSignature
  */
+@Immutable
 public interface TypeDescriptor extends TypeRepresentable {
 
     /**

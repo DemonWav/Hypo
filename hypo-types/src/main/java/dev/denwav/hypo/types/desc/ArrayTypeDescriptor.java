@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.desc;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.sig.ArrayTypeSignature;
 import java.lang.ref.WeakReference;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>Array type descriptors have the internal format of {@code [<base_type>}. The leading {@code [} is repeated to
  * denote the dimensionality of the array, so a 3-dimension array type would start with {@code [[[}.
  */
+@Immutable
 public final class ArrayTypeDescriptor extends Intern<ArrayTypeDescriptor> implements TypeDescriptor {
 
     private final int dimension;

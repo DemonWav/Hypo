@@ -1,3 +1,12 @@
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.createDirectories
+import kotlin.io.path.deleteIfExists
+import kotlin.io.path.notExists
+
 plugins {
     `java-library`
 }
@@ -33,7 +42,45 @@ afterEvaluate {
         }
     }
 
+    // javadoc doesn't like that static.javadoc.io redirects, so we'll manually copy the
+    // {element,package}-list for it so it doesn't complain
+    val elementLists = layout.buildDirectory.dir("javadocElementLists")
+    val javadocElementList by tasks.registering {
+        inputs.property("libs", hypoJava.javadocLibs)
+        outputs.dir(elementLists)
+
+        doLast {
+            val client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build()
+
+            val outDir = elementLists.get().asFile.toPath()
+            val base = "https://static.javadoc.io"
+            hypoJava.javadocLibs.get().forEach { m ->
+                val types = listOf("element", "package")
+                var response: HttpResponse<*>? = null
+                for (type in types) {
+                    val filePath = "${m.module.group}/${m.module.name}/${m.versionConstraint}/$type-list"
+                    val url = "$base/$filePath"
+                    val outFile = outDir.resolve(filePath)
+                    outFile.parent.createDirectories()
+
+                    val request = HttpRequest.newBuilder().GET().uri(URI.create(url)).build()
+                    response = client.send(request, HttpResponse.BodyHandlers.ofFile(outFile))
+                    if (response.statusCode() == 200) {
+                        break
+                    }
+
+                    outFile.deleteIfExists()
+                }
+                if (response == null || response.statusCode() != 200) {
+                    throw Exception("Failed: $response")
+                }
+            }
+        }
+    }
+
     tasks.javadoc {
+        dependsOn(javadocElementList)
+
         for (projDep in hypoJava.jdkVersionProjects.get()) {
             val proj = project(projDep.path)
 
@@ -42,11 +89,16 @@ afterEvaluate {
             classpath += sources
         }
 
-        val base = "https://static.javadoc.io/"
+        val packageListDir = elementLists.get().asFile.toPath()
         hypoJava.javadocLibs.get().forEach { m ->
-            val url = "$base/${m.module.group}/${m.module.name}/${m.versionConstraint}"
-            opt.links(url)
+            val base = "https://static.javadoc.io"
+            val artifact = "${m.module.group}/${m.module.name}/${m.versionConstraint}"
+            val packageDir = packageListDir.resolve(artifact)
+            val url = "$base/$artifact"
+
+            opt.linksOffline(url, packageDir.absolutePathString())
         }
+
         hypoJava.javadocProjects.get().forEach { p ->
             val javadocTask = project(p.path).tasks.javadoc
             dependsOn(javadocTask)

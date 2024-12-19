@@ -18,8 +18,10 @@
 
 package dev.denwav.hypo.types.sig.param;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.TypeBindable;
 import dev.denwav.hypo.types.TypeRepresentable;
 
+@Immutable
 public interface TypeArgument extends TypeBindable, TypeRepresentable {
 }

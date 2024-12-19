@@ -6,6 +6,8 @@ plugins {
 }
 
 dependencies {
+    compileOnlyApi(libs.annotations)
+
     api(projects.hypoModel)
 }
 
@@ -19,7 +21,6 @@ tasks.jar {
 
 hypoJava {
     javadocLibs.add(libs.annotations)
-    javadocLibs.add(libs.errorprone.annotations)
     javadocProjects.add(projects.hypoModel)
 }
 

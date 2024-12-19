@@ -16,8 +16,14 @@ repositories {
 }
 
 dependencies {
-    implementation(projects.hypoCore)
+    compileOnlyApi(libs.annotations)
+    compileOnlyApi(libs.errorprone.annotations)
+
     implementation(libs.jgrapht)
+
+    implementation(projects.hypoCore)
+    implementation(projects.hypoModel)
+    implementation(projects.hypoTypes)
 
     testImplementation(projects.hypoTest)
 }
@@ -38,7 +44,7 @@ hypoJava {
     javadocLibs.add(libs.annotations)
     javadocLibs.add(libs.errorprone.annotations)
     javadocLibs.add(libs.jgrapht)
-    javadocProjects.addAll(projects.hypoCore, projects.hypoModel)
+    javadocProjects.addAll(projects.hypoCore, projects.hypoModel, projects.hypoTypes)
 }
 
 hypoPublish {

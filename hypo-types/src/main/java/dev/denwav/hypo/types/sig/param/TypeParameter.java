@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.sig.param;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.TypeVariableBinder;
@@ -33,10 +34,12 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@Immutable
 public final class TypeParameter extends Intern<TypeParameter> implements TypeRepresentable {
 
     private final @NotNull String name;
     private final @Nullable ReferenceTypeSignature classBound;
+    @SuppressWarnings("Immutable")
     private final @NotNull List<? extends ReferenceTypeSignature> interfaceBounds;
 
     public static @NotNull TypeParameter of(

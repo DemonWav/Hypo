@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.desc;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.parsing.JvmTypeParseFailureException;
@@ -48,8 +49,10 @@ import org.jetbrains.annotations.NotNull;
  * @see TypeDescriptor
  * @see MethodSignature
  */
+@Immutable
 public final class MethodDescriptor extends Intern<MethodDescriptor> implements TypeRepresentable {
 
+    @SuppressWarnings("Immutable")
     final @NotNull List<? extends TypeDescriptor> parameters;
     final @NotNull TypeDescriptor returnType;
 

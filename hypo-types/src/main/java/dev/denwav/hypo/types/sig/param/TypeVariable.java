@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.sig.param;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.TypeVariableBinder;
@@ -31,6 +32,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
+@Immutable
 public final class TypeVariable
     extends Intern<TypeVariable>
     implements ReferenceTypeSignature, TypeRepresentable, ThrowsSignature {

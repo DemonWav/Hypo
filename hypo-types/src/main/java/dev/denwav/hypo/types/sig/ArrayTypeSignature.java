@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.sig;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeVariableBinder;
 import dev.denwav.hypo.types.desc.ArrayTypeDescriptor;
@@ -27,6 +28,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
+@Immutable
 public final class ArrayTypeSignature
     extends Intern<ArrayTypeSignature>
     implements ReferenceTypeSignature {

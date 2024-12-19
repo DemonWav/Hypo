@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.sig;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.TypeBindable;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.TypeVariableBinder;
@@ -29,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
  * {@link dev.denwav.hypo.types.sig.param.TypeVariable type varaibles}. This is simple a marker interface to denote
  * those types.
  */
+@Immutable
 public interface ThrowsSignature extends TypeBindable, TypeRepresentable {
 
     @Override

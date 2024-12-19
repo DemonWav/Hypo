@@ -8,7 +8,6 @@ plugins {
 
 dependencies {
     compileOnlyApi(libs.annotations)
-    api(libs.slf4j.api)
 
     api(projects.hypoTypes)
 }
@@ -23,7 +22,8 @@ tasks.jar {
 
 hypoJava {
     javadocLibs.add(libs.annotations)
-    javadocLibs.add(libs.errorprone.annotations)
+
+    javadocProjects.add(projects.hypoTypes)
 }
 
 hypoPublish {

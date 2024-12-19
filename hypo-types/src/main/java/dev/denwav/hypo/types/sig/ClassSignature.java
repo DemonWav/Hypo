@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.sig;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.TypeVariableBinder;
@@ -32,10 +33,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
+@Immutable
 public final class ClassSignature extends Intern<ClassSignature> implements TypeRepresentable {
 
+    @SuppressWarnings("Immutable")
     private final @NotNull List<? extends TypeParameter> typeParameters;
     private final @NotNull ClassTypeSignature superClass;
+    @SuppressWarnings("Immutable")
     private final @NotNull List<? extends ClassTypeSignature> superInterfaces;
 
     public static @NotNull ClassSignature of(

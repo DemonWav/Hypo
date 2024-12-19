@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types;
 
+import com.google.errorprone.annotations.Immutable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -38,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
  * {@link #asReadable()} to assist with debugging. {@link #asInternal()} should be used for serialization, as it matches
  * 1:1 with corresponding {@code parse()} methods for each type.
  */
+@Immutable
 public interface TypeRepresentable {
 
     /**

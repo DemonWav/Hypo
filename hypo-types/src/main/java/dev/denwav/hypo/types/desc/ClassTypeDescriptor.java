@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.desc;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.HypoTypesUtil;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.sig.ClassTypeSignature;
@@ -31,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
  * A {@link TypeDescriptor} representing a class type. Class (or reference) types follow the internal format of
  * {@code L<class_name>;}.
  */
+@Immutable
 public final class ClassTypeDescriptor extends Intern<ClassTypeDescriptor> implements TypeDescriptor {
 
     private final @NotNull String name;

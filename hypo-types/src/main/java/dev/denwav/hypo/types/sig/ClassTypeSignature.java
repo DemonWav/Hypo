@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.sig;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeVariableBinder;
 import dev.denwav.hypo.types.desc.ClassTypeDescriptor;
@@ -33,12 +34,14 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@Immutable
 public final class ClassTypeSignature
     extends Intern<ClassTypeSignature>
     implements ReferenceTypeSignature, ThrowsSignature {
 
     private final @Nullable ClassTypeSignature parentClass;
     private final @NotNull String name;
+    @SuppressWarnings("Immutable")
     private final @NotNull List<? extends TypeArgument> typeArguments;
 
     public static @NotNull ClassTypeSignature of(

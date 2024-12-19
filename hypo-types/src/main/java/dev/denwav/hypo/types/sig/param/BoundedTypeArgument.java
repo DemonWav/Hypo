@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.sig.param;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeRepresentable;
 import dev.denwav.hypo.types.TypeVariableBinder;
@@ -28,6 +29,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
+@Immutable
 public final class BoundedTypeArgument extends Intern<BoundedTypeArgument> implements TypeArgument, TypeRepresentable {
 
     private final @NotNull WildcardBound bounds;

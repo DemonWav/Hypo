@@ -18,6 +18,7 @@
 
 package dev.denwav.hypo.types.sig;
 
+import com.google.errorprone.annotations.Immutable;
 import dev.denwav.hypo.types.Intern;
 import dev.denwav.hypo.types.TypeBindable;
 import dev.denwav.hypo.types.TypeRepresentable;
@@ -46,6 +47,7 @@ import org.jetbrains.annotations.NotNull;
  * @see MethodSignature
  * @see TypeDescriptor
  */
+@Immutable
 public interface TypeSignature extends TypeBindable, TypeRepresentable {
 
     /**

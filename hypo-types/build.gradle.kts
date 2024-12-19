@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
     compileOnlyApi(libs.annotations)
+    compileOnlyApi(libs.errorprone.annotations)
 }
 
 tasks.jar {

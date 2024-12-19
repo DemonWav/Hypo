@@ -16,8 +16,13 @@ repositories {
 }
 
 dependencies {
-    api(projects.hypoCore)
+    compileOnlyApi(libs.annotations)
     api(libs.bundles.asm)
+    api(libs.slf4j.api)
+
+    api(projects.hypoCore)
+    api(projects.hypoModel)
+    api(projects.hypoTypes)
 
     testImplementation(projects.hypoTest)
 }
@@ -36,9 +41,9 @@ tasks.jar {
 
 hypoJava {
     javadocLibs.add(libs.annotations)
-    javadocLibs.add(libs.errorprone.annotations)
     javadocLibs.addAll(libs.bundles.asm)
-    javadocProjects.addAll(projects.hypoCore, projects.hypoModel)
+    javadocLibs.add(libs.slf4j.api)
+    javadocProjects.addAll(projects.hypoCore, projects.hypoModel, projects.hypoTypes)
 }
 
 hypoPublish {
